@@ -45,6 +45,7 @@ namespace NVRControlServer.Storage.Model
         private AutoResetEvent autoEvent;
         private object lockObject;
         private int checkTaskStatusFlag = 0;
+        private string fileSaveFormat;
         #endregion 1.1 变量
 
         #region 1.2 属性
@@ -148,8 +149,8 @@ namespace NVRControlServer.Storage.Model
 
          ~BackupTask()
          {
-             taskTimer.Dispose();
-             taskWorkThread.Abort();
+             //taskTimer.Dispose();
+             //staskWorkThread.Abort();
 
          }
 
@@ -268,7 +269,7 @@ namespace NVRControlServer.Storage.Model
          public void CheckTaskStatus(object sender, System.Timers.ElapsedEventArgs e)
          {
 
-             lock (lockObject)
+             lock (LockObject)
              {
                  if (checkTaskStatusFlag == 0)
                      checkTaskStatusFlag = 1;
@@ -285,10 +286,12 @@ namespace NVRControlServer.Storage.Model
              DateTime endTime = parameter.EndTime;
              DateTime backupTime = parameter.EndTime;
              string backupSetConfigFile = parameter.BackupTaskSetConfigFile;
+             string backupDataSavePath = parameter.BackupDataSavePath;
 
              int downLoadPos = nvrControler.NvrGetDownLoadPos();
              //Console.WriteLine("通道" + channelSelectIndex  + "下载进度" + downLoadPos);
 
+             //下载完成后写入配置文件下一个备份时间
              if (downLoadPos == 100)
              {
                 Console.WriteLine("已经完成下载了");
@@ -296,12 +299,24 @@ namespace NVRControlServer.Storage.Model
                 {
                     Console.WriteLine("停止下载,写入下一个需备份的时间点");
                     DataOperate.WritePrivateProfileString(nvrControler.NvrName, channelSelectIndex.ToString() + "backupTime",
-                           TimeHelper.DateTimeToString(endTime + new TimeSpan(0, 15, 0)), backupSetConfigFile);
+                           TimeHelper.DateTimeToString(endTime), backupSetConfigFile);
                 }
+
+                string backupSaveFileName = TimeHelper.DateTimeToString(startTime) + ".avi";
+                string backupSaveFullPathFileName = backupDataSavePath + "/" + backupSaveFileName;
+            
+                if (FileHelper.GetFileLength(backupSaveFullPathFileName) == 0)
+                {
+                    Console.WriteLine("删除的文件为" + backupSaveFullPathFileName);
+                    FileHelper.DeleteFile(backupSaveFullPathFileName);
+                }
+
                 this.checkBackupTaskTimer.Enabled = false;
                 this.checkBackupTaskTimer.Stop();
                  autoEvent.Set();
              }
+
+            //下载过程中出现网络问题则在下次重新备份
              else if (downLoadPos == 200)
              {
                  Console.WriteLine("出现网络故障");
@@ -310,6 +325,8 @@ namespace NVRControlServer.Storage.Model
                  this.checkBackupTaskTimer.Stop();
                  autoEvent.Set();
              }
+
+              //下载出现错误
              else if (downLoadPos == -1)
              {
                  Console.WriteLine("下载失败，可能没有这个文件");
@@ -322,7 +339,7 @@ namespace NVRControlServer.Storage.Model
                  autoEvent.Set();
              }
 
-             lock (lockObject)
+             lock (LockObject)
                  checkTaskStatusFlag = 0;
 
          }

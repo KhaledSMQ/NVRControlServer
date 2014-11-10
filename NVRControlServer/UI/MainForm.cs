@@ -159,15 +159,15 @@ namespace NVRControlServer.UI
             #endregion 1.4 数据存储中心初始化
       
             #region 1.5 备份数据中心初始化
-            //backupDataCenter = new BackupDataCenter(backupDataPath, nvrList, backupVideoFigFile);
-            //if (backupDataCenter.Initalization())
-            //{
-            //    Log.WriteLog(LogType.Trace, "数据存储中心控制初始化成功");
-            //}
-            //else
-            //{
-            //    Log.WriteLog(LogType.Error, "备份数据存储中心控制初始化失败");
-            //}
+            backupDataCenter = new BackupDataCenter(backupDataPath, nvrList, backupVideoFigFile);
+            if (backupDataCenter.Initalization())
+            {
+                Log.WriteLog(LogType.Trace, "数据存储中心控制初始化成功");
+            }
+            else
+            {
+                Log.WriteLog(LogType.Error, "备份数据存储中心控制初始化失败");
+            }
             #endregion 1.5 备份数据中心初始化
 
             tcpSendFile = new TcpSendFile();

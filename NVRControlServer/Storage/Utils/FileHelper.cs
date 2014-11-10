@@ -127,6 +127,13 @@ namespace NVRControlServer.Storage.Utils
             }
         }
 
+        public static void DeleteFile(string filePath)
+        {
+            if (File.Exists(filePath))
+                File.Delete(filePath);
+        }
+
+
         /// <summary>
         /// 指定文件夹下面的所有内容copy到目标文件夹下面
         /// </summary>
@@ -323,6 +330,12 @@ namespace NVRControlServer.Storage.Utils
         public static int Min2Subtle(int min)
         {
             return min * 60 * 1000;
+        }
+
+        public static long GetFileLength(string filePath)
+        {
+            FileInfo fileInfo = new FileInfo(filePath);
+            return fileInfo.Length;
         }
 
 
