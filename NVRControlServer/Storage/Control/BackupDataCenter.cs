@@ -92,6 +92,7 @@ namespace NVRControlServer.Storage.Control
                 //{
                 NVRControler nvrcontroler = nvrList[1];
                 NVRChannel[] nvrChannels = nvrcontroler.NvrChannels;
+
                 //for (int j = 0; j < nvrChannels.Length; j++)
                 //{
                     //DateTime startTime = TimeHelper.StringToDateTime(

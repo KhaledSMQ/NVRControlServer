@@ -43,6 +43,8 @@ namespace NVRControlServer.Storage.Model
         private object taskWorkThreadParam;//任务工作线程参数
         private bool taskWorkThreadRunFlag;//任务工作线程工作指示
         private AutoResetEvent autoEvent;
+        private object lockObject;
+        private int checkTaskStatusFlag = 0;
         #endregion 1.1 变量
 
         #region 1.2 属性
@@ -88,7 +90,19 @@ namespace NVRControlServer.Storage.Model
         {
             get{return taskLastExecuteTime;}
         }
+
+        public object LockObject
+        {
+            get
+            {
+                if (lockObject == null)
+                    lockObject = new object();
+                return lockObject;
+            }
+        }
+
         #endregion 1.2 属性
+
 
         #endregion 1. 变量属性
 
@@ -253,6 +267,15 @@ namespace NVRControlServer.Storage.Model
 
          public void CheckTaskStatus(object sender, System.Timers.ElapsedEventArgs e)
          {
+
+             lock (lockObject)
+             {
+                 if (checkTaskStatusFlag == 0)
+                     checkTaskStatusFlag = 1;
+                 else
+                     return;
+             }
+
              BuckupTaskParameter parameter = (BuckupTaskParameter)taskWorkThreadParam;
              NVRControler nvrControler = parameter.ThreadPamamterNvrControler;
              NVRChannel[] nvrChannels  =  nvrControler.NvrChannels;
@@ -283,7 +306,6 @@ namespace NVRControlServer.Storage.Model
              {
                  Console.WriteLine("出现网络故障");
                  //if (nvrControler.NvrStopDownLoad())
-
                  this.checkBackupTaskTimer.Enabled = false;
                  this.checkBackupTaskTimer.Stop();
                  autoEvent.Set();
@@ -299,6 +321,10 @@ namespace NVRControlServer.Storage.Model
                  this.checkBackupTaskTimer.Stop();
                  autoEvent.Set();
              }
+
+             lock (lockObject)
+                 checkTaskStatusFlag = 0;
+
          }
 
 
