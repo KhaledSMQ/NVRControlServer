@@ -27,6 +27,10 @@ using NVRControlServer.NVR.Control;
 using NVRControlServer.Storage.Control;
 using NVRControlServer.Storage.Utils;
 using NVRControlServer.Utils.Log;
+using NVRControlServer.DataBase.SqlServerDAL;
+using NVRControlServer.DataBase.Modle;
+using EasyDBUtility;
+using System.Data.SqlClient;
 
 namespace NVRControlServer.UI
 {
@@ -37,8 +41,8 @@ namespace NVRControlServer.UI
         #region 1. 变量属性
 
         #region 1.1 变量
-        private string serverIp = "192.168.1.15";
-        //private const string serverIp = "127.0.0.1";
+        //private string serverIp = "192.168.1.15";
+        private const string serverIp = "127.0.0.1";
         //private const string serverIp = "192.168.100.12";
         private  int serverPort = 8889;
         private  int serverListenNum = 100;
@@ -60,6 +64,10 @@ namespace NVRControlServer.UI
         private Thread mlistenThread = null;
         private Socket clientSocket;               //连接客户端socket
         private TcpSendFile tcpSendFile;
+
+
+
+
 
         #endregion 1.1 变量
 
@@ -146,16 +154,16 @@ namespace NVRControlServer.UI
             #endregion 1.3界面初始化
 
             #region 1.4 数据存储中心初始化
-            storageDataCenter = new StorageDataCenter(storageDataPath, nvrList, autoVideoFigFile);
-            if (storageDataCenter.Initalization())
-            {
-                Log.WriteLog(LogType.Trace, "数据存储中心控制初始化成功");
-                storageDataCenter.StartAutoVideo();
-            }
-            else
-            {
-                Log.WriteLog(LogType.Error, "数据存储中心控制初始化失败");
-            }
+            //storageDataCenter = new StorageDataCenter(storageDataPath, nvrList, autoVideoFigFile);
+            //if (storageDataCenter.Initalization())
+            //{
+            //    Log.WriteLog(LogType.Trace, "数据存储中心控制初始化成功");
+            //    storageDataCenter.StartAutoVideo();
+            //}
+            //else
+            //{
+            //    Log.WriteLog(LogType.Error, "数据存储中心控制初始化失败");
+            //}
             #endregion 1.4 数据存储中心初始化
       
             #region 1.5 备份数据中心初始化
@@ -168,6 +176,93 @@ namespace NVRControlServer.UI
             {
                 Log.WriteLog(LogType.Error, "备份数据存储中心控制初始化失败");
             }
+
+
+            //string dataBaseConnectionString = NVRControlServer.Properties.Settings.Default.DKServerConnectionString;
+            //SqlConnection dataBaseConnection = new SqlConnection(dataBaseConnectionString);
+            //if (dataBaseConnection != null)
+            //{
+            //    dataBaseConnection.Open();
+            //    string sqlstr = "insert into [Privileges] values('super man')";
+            //    SqlCommand sqlcom = new SqlCommand(sqlstr, dataBaseConnection);
+            //    sqlcom.ExecuteNonQuery();
+            //}
+
+            //int result = SimpleDBHelper<SqlHelper>.ExecuteNonQuery("insert into [Privileges] values('super man test')");
+
+            //SqlHelper helper = new SqlHelper();
+            //helper.AutoClose = false;
+            //helper.CreateCommand("insert into [Privileges] values('super man test1')");
+            //helper.ExecuteNonQuery();
+
+            //helper.CreateCommand("select * from [Privileges]");
+            //DataReader dr = helper.ExecuteReader();
+            //while (dr.Read())
+            //{
+
+            //}
+
+        //    helper.CreateCommand("insert into [Privileges] values('super man1')");
+      //      helper.ExecuteNonQuery();
+
+            //List<User> list = new List<User>();
+            //while (dr.Read())
+            //{
+            //    User data = new User();
+            //    data.Id = dr.GetInt("Id");
+            //    datat.Name = dr.GetString("Name");
+            //    data.Sex = dr.GetBoolean("Sex");
+            //    data.NationId = dr.GetInt("NationId");
+            //    //使用CommandText方法
+            //    helper.CommandText("select NationName from Nation where NationId=" + data.NationId);
+            //    object obj = helper.ExecuteScalar();
+            //    data.NationName = obj != null ? obj.ToString() : string.Empty;
+            //    list.Add(data);
+            //}
+
+            //helper.CreateCommand("insert into [Privileges] values('super man1')");
+            //helper.ExecuteNonQuery();
+
+            //VideoInfoData videoInfoData = new VideoInfoData();
+            //videoInfoData.nvrId = 0;
+            //videoInfoData.channelId = 0;
+            //videoInfoData.startTime = DateTime.Now;
+            //videoInfoData.endTime = DateTime.Now;
+            //videoInfoData.fileName = "测试用";
+            //videoInfoData.filePath = "e:/";
+
+            //VideoInfoData videoInfoData1 = new VideoInfoData();
+            //videoInfoData1.nvrId = 0;
+            //videoInfoData1.channelId = 1;
+            //videoInfoData1.startTime = DateTime.Now;
+            //videoInfoData1.endTime = DateTime.Now;
+            //videoInfoData1.fileName = "测试用";
+            //videoInfoData1.filePath = "e:/";
+
+            //VideoInfoData videoInfoData2 = new VideoInfoData();
+            //videoInfoData2.nvrId = 0;
+            //videoInfoData2.channelId = 2;
+            //videoInfoData2.startTime = DateTime.Now;
+            //videoInfoData2.endTime = DateTime.Now;
+            //videoInfoData2.fileName = "测试用";
+            //videoInfoData2.filePath = "e:/";
+
+            //VideoInfoDAL videoInfoDal = new VideoInfoDAL();
+            //videoInfoDal.Insert(videoInfoData);
+            //videoInfoDal.Insert(videoInfoData1);
+            //videoInfoDal.Insert(videoInfoData2);
+
+            //VideoInfoData videoInfoData3 = new VideoInfoData();
+            //videoInfoData3.nvrId = 0;
+            //videoInfoData3.channelId = 1;
+            //videoInfoData3.startTime = DateTime.Now - new TimeSpan(0, 50, 0);
+            //videoInfoData3.endTime = DateTime.Now + new TimeSpan(0, 50, 0);
+            //videoInfoData3.fileName = "测试用";
+            //videoInfoData3.filePath = "e:/";
+
+            //List<VideoInfoData> list =
+            //    (List<VideoInfoData>)videoInfoDal.GetVideoByTime(videoInfoData3);
+
             #endregion 1.5 备份数据中心初始化
 
             tcpSendFile = new TcpSendFile();
@@ -188,8 +283,8 @@ namespace NVRControlServer.UI
                     //clientSession.ClientIp = (clientSocket.RemoteEndPoint as IPEndPoint).Address.ToString();
                     //clientSession.ClientPort = (clientSocket.RemoteEndPoint as IPEndPoint).Port;
                     //AddItemToServerStatusListView(new string[] { "进入", mClient.ClientIp, mClient.ClientPort.ToString() });
-                    clientSession.receiveClientDataEvent += new ClientSession.ServiceHandler(ServiceProcess);
-                    clientSession.addEvent += new ClientSession.AddStatuListHandle(AddItemToListBox);
+                    //clientSession.receiveClientDataEvent += new ClientSession.ServiceHandler(ServiceProcess);
+                    //clientSession.addEvent += new ClientSession.AddStatuListHandle(AddItemToListBox);
                     //mClient.addServerStatusEvent += new ClientSession.AddServerStatusListViewHandle(AddItemToServerStatusListView);
                 }
                 catch(Exception ex)
@@ -202,317 +297,342 @@ namespace NVRControlServer.UI
 
         #region 处理客户端请求
 
-        private void ServiceProcess(ClientSession clientSession, CommunicateMsg msg)
-        {
-            object[] objects = new object[] { clientSession, msg };
-            ThreadPool.QueueUserWorkItem(new WaitCallback(Processing), objects);
-        }
+        //private void ServiceProcess(ClientSession clientSession, CommunicateMsg msg)
+        //{
+        //    object[] objects = new object[] { clientSession, msg };
+        //    ThreadPool.QueueUserWorkItem(new WaitCallback(Processing), objects);
+        //}
 
 
-        private void Processing(object o)
-        {
-            object[] values = (object[])o;
-            ClientSession clientSession = (ClientSession)values[0];
-            CommunicateMsg communicateMsg = (CommunicateMsg)values[1];
+//        private void Processing(object o)
+//        {
+//            object[] values = (object[])o;
 
-            int commandKind = (int)communicateMsg.CommandKind;
-            int clientIdentify = (int)communicateMsg.RightIdentify;
-            byte[] commandAddtionMsg = (byte[])communicateMsg.AdditionMsg;
+      
 
-            Msgkind msgKind;
-            ExecuteResult executeResult;
-            string replayMsg = string.Empty;
-            string msgBuffer = string.Empty;
-            string[] nMsgBuffer;
-            byte[] replayMsgByte = null;
+//            ClientSession clientSession = (ClientSession)values[0];
+//            CommunicateMsg communicateMsg = (CommunicateMsg)values[1];
 
-            try
-            {
-                   switch (commandKind)
-                        {
-                            //登陆
-                            case (int)Command.RequestLogin:
-                                msgKind = Msgkind.ResponseLogin;
-                                try
-                                {
-                                    //for (int j = 0; j < this.NvrList.Count; j++)
-                                    //{
-                                    //    NVRControler nvrControler = this.NvrList[j];
-                                    //    Console.WriteLine(nvrControler.NvrName + "登录成功!");
-                                    //    NVRChannel[] nvrChannels = nvrControler.NvrChannels;
-                                    //    for (int i = 0; i < nvrChannels.Length; i++)
-                                    //    {
-                                    //        string channelStorageDataPath = this..StorageDataPath +
-                                    //                nvrControler.NvrName + "/" + i + "/";
-                                    //        StorageTaskParameter storageThreadParameter = new StorageTaskParameter
-                                    //                (j, i, 15, 2, nvrControler, channelStorageDataPath, new TimeSpan(0, 0, 1), true);
-                                    //        DateTime sheduleTime = DateTime.Now;
-                                    //        ScheduleExecutionOnce future = new ScheduleExecutionOnce(sheduleTime);
-                                    //        StorageTask sheduleTask = new StorageTask(future);
-                                    //        sheduleTask.Job += new TimerCallback(sheduleTask.Execute);
-                                    //        sheduleTask.JobParam = storageThreadParameter;
-                                    //        storageDataCenter.AddTask(sheduleTask);
-                                    //    }
-                                    //}
-                                     executeResult = ExecuteResult.ExcuteSuccess;
-                                    replayMsg = "成功开启教学视频录像";
-                                }
-                                catch(Exception ex)
-                                {
-                                      executeResult = ExecuteResult.ExcuteSuccess;
-                                       replayMsg = "开启教学视频录像失败";
-                                }
-                                replayMsgByte = Transform.string2Byte(replayMsg);
-                                clientSession.Send(msgKind, executeResult, replayMsgByte);
-                                break;
+//            GetMoreFileInformationHandle handle = new GetMoreFileInformationHandle();
+            
 
-                            //退出
-                            case (int)Command.RequestLogout:
-                                msgKind = Msgkind.ResponseLogout;
-                                try
-                                {
-                                        executeResult = ExecuteResult.ExcuteSuccess;
-                                        replayMsg = "成功关闭教学视频录像!";
-                                }
-                                catch(Exception ex)
-                                {
-                                    executeResult = ExecuteResult.ExcuteFail;
-                                        replayMsg = "关闭教学视频录像失败!";
-                                }
-                                replayMsgByte = Transform.string2Byte(replayMsg);
-                                clientSession.Send(msgKind, executeResult, replayMsgByte);
-                                break;
 
-                            //更新nvr和通道状态
-                            case (int)Command.RequestGetNvrChannelInfo:
-                                int nvrselect = Transform.Bytes2Int(commandAddtionMsg);
-                                string[][] strs = nvrList[nvrselect].GetChannelInfo();
-                                replayMsgByte = Transform.Serialize(strs);
-                                msgKind = Msgkind.ResponseGetNvrChannelInfo;
-                                if (replayMsgByte == null)
-                                {
-                                    executeResult = ExecuteResult.ExcuteFail;
-                                    replayMsg = "无法获得通道状态信息";
-                                    replayMsgByte = Transform.string2Byte(replayMsg);
-                                }
-                                else
-                                {
-                                    executeResult = ExecuteResult.ExcuteSuccess;
-                                }
-                                clientSession.Send(msgKind, executeResult, replayMsgByte);
-                                break;
-#region 
-                            ////云台转动控制
-                            //case 3:
-                            //    msgBuffer = Transform.byte2String(msgdata);
-                            //    nMsgBuffer = Transform.getStrings(msgBuffer);
-                            //    nvrselect = Transform.string2int(nMsgBuffer[0]);
-                            //    int channelselect = Transform.string2int(nMsgBuffer[1]);
-                            //    int ptzkind = Transform.string2int(nMsgBuffer[2]);
-                            //    int begstop = Transform.string2int(nMsgBuffer[3]);
-                            //    int speed = Transform.string2int(nMsgBuffer[4]);
-                            //    NVRStatus status =(NVRStatus)nvrList[nvrselect].NvrStatus;
-                            //    if (status == NVRStatus.Offline || 
-                            //            status == NVRStatus.Null)
-                            //    {
-                            //        replayMsg = "the nvr not online or busy";
-                            //        replayMsgByte = Transform.string2Byte(replayMsg);
-                            //        executeResult = Exeresult.ExcuteFail;
-                            //    }
-                            //    else
-                            //    {
-                            //        if (nvrList[nvrselect].PTZControl(channelselect, ptzkind, begstop, speed))
-                            //        {
-                            //            if (begstop == 0)
-                            //            {
-                            //                Thread.Sleep(500);
-                            //                begstop = 1;
-                            //                nvrList[nvrselect].PTZControl(channelselect, ptzkind, begstop, speed);
-                            //            }
-                            //            replayMsg = "control success!";
-                            //            replayMsgByte = Transform.string2Byte(replayMsg);
-                            //            executeResult = Exeresult.ExcuteSuccess;
-                            //        }
-                            //        else
-                            //        {
-                            //            replayMsg = nvrList[nvrselect].GetLastErrorString();
-                            //            replayMsgByte = Transform.string2Byte(replayMsg);
-                            //            executeResult = Exeresult.ExcuteFail;
-                            //        }
-                            //    }
-                            //     msgKind = Msgkind.ack;
-                            //     tcpport.Send(msgKind, executeResult, replayMsgByte);
-                            //    break;
+//            int commandKind = (int)communicateMsg.CommandKind;
+//            int clientIdentify = (int)communicateMsg.RightIdentify;
+//            byte[] commandAddtionMsg = (byte[])communicateMsg.AdditionMsg;
 
-                            ////Get或Set图像配置
-                            //case 4:
-                            //    msgKind = Msgkind.ack;
-                            //    int NvrIndex = (int)msg.AdditionMsg[0];
-                            //    int lChannelIndex = (int)msg.AdditionMsg[1];
-                            //    uint BrightValue = (uint)msg.AdditionMsg[2];
-                            //    uint ContrastValue = (uint)msg.AdditionMsg[3];
-                            //    uint SaturationValue = (uint)msg.AdditionMsg[4];
-                            //    uint HueValue = (BrightValue + ContrastValue + SaturationValue) / 3;
-                            //    if (nvrList[NvrIndex].SetVideoEffect(lChannelIndex, 
-                            //        BrightValue,ContrastValue,SaturationValue,HueValue))
-                            //    {
-                            //        executeResult = Exeresult.ExcuteSuccess;
-                            //        replayMsg = "Image Configura success!";
-                            //    }
-                            //    else
-                            //    {
-                            //        executeResult = Exeresult.ExcuteSuccess;
-                            //        replayMsg = "Image Configura Failed!";
+//            //string fileName = string.Empty;
+//            //string nvrId = string.Empty;
+//            //string channelId = string.Empty;
 
-                            //    }
-                            //    replayMsgByte = Transform.string2Byte(replayMsg);
-                            //    tcpport.Send(msgKind, executeResult, replayMsgByte);
-                            //    break;
-#endregion 
+//            MSGKIND msgKind;
+//            EXERESULT executeResult;
+//            string replayMsg = string.Empty;
+//            string msgBuffer = string.Empty;
+//            string[] nMsgBuffer;
+//            byte[] replayMsgByte = null;
+
+
+
+
+//            try
+//            {
+//                   switch (commandKind)
+//                    {
+//                            //登陆
+//                            case (int)COMKIND.RequestLogin:
+//                                msgKind = MSGKIND.ResponseLogin;
+//                                try
+//                                {
+//                                    //for (int j = 0; j < this.NvrList.Count; j++)
+//                                    //{
+//                                    //    NVRControler nvrControler = this.NvrList[j];
+//                                    //    Console.WriteLine(nvrControler.NvrName + "登录成功!");
+//                                    //    NVRChannel[] nvrChannels = nvrControler.NvrChannels;
+//                                    //    for (int i = 0; i < nvrChannels.Length; i++)
+//                                    //    {
+//                                    //        string channelStorageDataPath = this..StorageDataPath +
+//                                    //                nvrControler.NvrName + "/" + i + "/";
+//                                    //        StorageTaskParameter storageThreadParameter = new StorageTaskParameter
+//                                    //                (j, i, 15, 2, nvrControler, channelStorageDataPath, new TimeSpan(0, 0, 1), true);
+//                                    //        DateTime sheduleTime = DateTime.Now;
+//                                    //        ScheduleExecutionOnce future = new ScheduleExecutionOnce(sheduleTime);
+//                                    //        StorageTask sheduleTask = new StorageTask(future);
+//                                    //        sheduleTask.Job += new TimerCallback(sheduleTask.Execute);
+//                                    //        sheduleTask.JobParam = storageThreadParameter;
+//                                    //        storageDataCenter.AddTask(sheduleTask);
+//                                    //    }
+//                                    //}
+//                                     executeResult = EXERESULT.ExcuteSuccess;
+//                                    replayMsg = "成功开启教学视频录像";
+//                                }
+//                                catch(Exception ex)
+//                                {
+//                                      executeResult = EXERESULT.ExcuteSuccess;
+//                                       replayMsg = "开启教学视频录像失败";
+//                                }
+//                                replayMsgByte = Transform.string2Byte(replayMsg);
+//                                clientSession.Send(msgKind, executeResult, replayMsgByte);
+//                                break;
+
+//                            //退出
+//                            case (int)COMKIND.RequestLogout:
+//                                msgKind = MSGKIND.ResponseLogout;
+//                                try
+//                                {
+//                                        executeResult = EXERESULT.ExcuteSuccess;
+//                                        replayMsg = "成功关闭教学视频录像!";
+//                                }
+//                                catch(Exception ex)
+//                                {
+//                                    executeResult = EXERESULT.ExcuteFail;
+//                                        replayMsg = "关闭教学视频录像失败!";
+//                                }
+//                                replayMsgByte = Transform.string2Byte(replayMsg);
+//                                clientSession.Send(msgKind, executeResult, replayMsgByte);
+//                                break;
+
+//                            //更新nvr和通道状态
+//                            case (int)COMKIND.RequestGetNvrChannelInfo:
+//                                int nvrselect = Transform.Bytes2Int(commandAddtionMsg);
+//                                string[][] strs = nvrList[nvrselect].GetChannelInfo();
+//                                replayMsgByte = Transform.Serialize(strs);
+//                                msgKind = MSGKIND.ResponseGetNvrChannelInfo;
+//                                if (replayMsgByte == null)
+//                                {
+//                                    executeResult = EXERESULT.ExcuteFail;
+//                                    replayMsg = "无法获得通道状态信息";
+//                                    replayMsgByte = Transform.string2Byte(replayMsg);
+//                                }
+//                                else
+//                                {
+//                                    executeResult = EXERESULT.ExcuteSuccess;
+//                                }
+//                                clientSession.Send(msgKind, executeResult, replayMsgByte);
+//                                break;
+//#region 
+//                            ////云台转动控制
+//                            //case 3:
+//                            //    msgBuffer = Transform.byte2String(msgdata);
+//                            //    nMsgBuffer = Transform.getStrings(msgBuffer);
+//                            //    nvrselect = Transform.string2int(nMsgBuffer[0]);
+//                            //    int channelselect = Transform.string2int(nMsgBuffer[1]);
+//                            //    int ptzkind = Transform.string2int(nMsgBuffer[2]);
+//                            //    int begstop = Transform.string2int(nMsgBuffer[3]);
+//                            //    int speed = Transform.string2int(nMsgBuffer[4]);
+//                            //    NVRStatus status =(NVRStatus)nvrList[nvrselect].NvrStatus;
+//                            //    if (status == NVRStatus.Offline || 
+//                            //            status == NVRStatus.Null)
+//                            //    {
+//                            //        replayMsg = "the nvr not online or busy";
+//                            //        replayMsgByte = Transform.string2Byte(replayMsg);
+//                            //        executeResult = Exeresult.ExcuteFail;
+//                            //    }
+//                            //    else
+//                            //    {
+//                            //        if (nvrList[nvrselect].PTZControl(channelselect, ptzkind, begstop, speed))
+//                            //        {
+//                            //            if (begstop == 0)
+//                            //            {
+//                            //                Thread.Sleep(500);
+//                            //                begstop = 1;
+//                            //                nvrList[nvrselect].PTZControl(channelselect, ptzkind, begstop, speed);
+//                            //            }
+//                            //            replayMsg = "control success!";
+//                            //            replayMsgByte = Transform.string2Byte(replayMsg);
+//                            //            executeResult = Exeresult.ExcuteSuccess;
+//                            //        }
+//                            //        else
+//                            //        {
+//                            //            replayMsg = nvrList[nvrselect].GetLastErrorString();
+//                            //            replayMsgByte = Transform.string2Byte(replayMsg);
+//                            //            executeResult = Exeresult.ExcuteFail;
+//                            //        }
+//                            //    }
+//                            //     msgKind = Msgkind.ack;
+//                            //     tcpport.Send(msgKind, executeResult, replayMsgByte);
+//                            //    break;
+
+//                            ////Get或Set图像配置
+//                            //case 4:
+//                            //    msgKind = Msgkind.ack;
+//                            //    int NvrIndex = (int)msg.AdditionMsg[0];
+//                            //    int lChannelIndex = (int)msg.AdditionMsg[1];
+//                            //    uint BrightValue = (uint)msg.AdditionMsg[2];
+//                            //    uint ContrastValue = (uint)msg.AdditionMsg[3];
+//                            //    uint SaturationValue = (uint)msg.AdditionMsg[4];
+//                            //    uint HueValue = (BrightValue + ContrastValue + SaturationValue) / 3;
+//                            //    if (nvrList[NvrIndex].SetVideoEffect(lChannelIndex, 
+//                            //        BrightValue,ContrastValue,SaturationValue,HueValue))
+//                            //    {
+//                            //        executeResult = Exeresult.ExcuteSuccess;
+//                            //        replayMsg = "Image Configura success!";
+//                            //    }
+//                            //    else
+//                            //    {
+//                            //        executeResult = Exeresult.ExcuteSuccess;
+//                            //        replayMsg = "Image Configura Failed!";
+
+//                            //    }
+//                            //    replayMsgByte = Transform.string2Byte(replayMsg);
+//                            //    tcpport.Send(msgKind, executeResult, replayMsgByte);
+//                            //    break;
+//#endregion 
                             
-                            //搜索视频文件信息
-                            case (int)Command.RequestSearchFile:
-                                msgKind = Msgkind.ResponseSearchFile;
-                                msgBuffer = Transform.byte2String(commandAddtionMsg);
-                                nMsgBuffer = Transform.GetStrings(msgBuffer,',');
-                                int searchNvrId = (int)Transform.string2int(nMsgBuffer[0]);
-                                int searchChannelId = (int)Transform.string2int(nMsgBuffer[1]);
-                                DateTime searchStartTime = (DateTime)Transform.String2DateTime(nMsgBuffer[2]);
-                                DateTime searchEndTime = (DateTime)Transform.String2DateTime(nMsgBuffer[3]);
-                                string searchPath = storageDataPath + "/" + nvrList[searchNvrId].NvrName + "/" + searchChannelId;
-                                List<SearchVideoFileInfo> searchFileList = FileHelper.SearchVideoFileByTime(
-                                                                            searchPath, searchStartTime, searchEndTime);
-                                if (searchFileList.Count != 0)
-                                {
-                                    executeResult = ExecuteResult.ExcuteSuccess;
-                                    int fileListCount = searchFileList.Count;
-                                    string[] fileStrings = new string[fileListCount];
-                                    for(int i =0;i<searchFileList.Count; i++)
-                                    {
-                                        SearchVideoFileInfo file = searchFileList[i];
-                                        string fileName = file.VideoFileName;
-                                        string fileLength = file.VideoFileLength;
-                                        string fileStartTime = file.VideoFileStartTime.ToString("yyyyMMddHHmmss");
-                                        string fileEndTime = file.VideoFileEndTime.ToString("yyyyMMddHHmmss");
-                                        fileStrings[i] = fileName + "," + fileLength + ","
-                                                            + fileStartTime + "," + fileEndTime;
-                                        replayMsgByte = (byte[])Transform.Serialize(fileStrings[i]);
-                                        clientSession.Send(msgKind, executeResult, replayMsgByte);
-                                    }
-                                }
-                                else
-                                {
-                                    executeResult = ExecuteResult.ExcuteFail;
-                                    replayMsg  = "未搜索到指定文件!";
-                                    replayMsgByte = (byte[])Transform.Serialize(replayMsg);
-                                    clientSession.Send(msgKind, executeResult, replayMsgByte);
-                                }                                                                                                                                                                                                                                                                                                 
-                                break;
+//                            //搜索视频文件信息
+//                            case (int)COMKIND.RequestSearchFile:
+//                                msgKind = MSGKIND.ResponseSearchFile;
+//                                msgBuffer = Transform.byte2String(commandAddtionMsg);
+//                                nMsgBuffer = Transform.GetStrings(msgBuffer,',');
+//                                int searchNvrId = (int)Transform.string2int(nMsgBuffer[0]);
+//                                int searchChannelId = (int)Transform.string2int(nMsgBuffer[1]);
+//                                DateTime searchStartTime = (DateTime)Transform.String2DateTime(nMsgBuffer[2]);
+//                                DateTime searchEndTime = (DateTime)Transform.String2DateTime(nMsgBuffer[3]);
+//                                string searchPath = storageDataPath + "/" + nvrList[searchNvrId].NvrName + "/" + searchChannelId;
+//                                List<SearchVideoFileInfo> searchFileList = FileHelper.SearchVideoFileByTime(
+//                                                                            searchPath, searchStartTime, searchEndTime);
+//                                if (searchFileList.Count != 0)
+//                                {
+//                                    executeResult = EXERESULT.ExcuteSuccess;
+//                                    int fileListCount = searchFileList.Count;
+//                                    string[] fileStrings = new string[fileListCount];
+//                                    for(int i =0;i<searchFileList.Count; i++)
+//                                    {
+//                                        SearchVideoFileInfo file = searchFileList[i];
+//                                        string fileName = file.VideoFileName;
+//                                        string fileLength = file.VideoFileLength;
+//                                        string fileStartTime = file.VideoFileStartTime.ToString("yyyyMMddHHmmss");
+//                                        string fileEndTime = file.VideoFileEndTime.ToString("yyyyMMddHHmmss");
+//                                        fileStrings[i] = fileName + "," + fileLength + ","
+//                                                            + fileStartTime + "," + fileEndTime;
+//                                        replayMsgByte = (byte[])Transform.Serialize(fileStrings[i]);
+//                                        clientSession.Send(msgKind, executeResult, replayMsgByte);
+//                                    }
+//                                }
+//                                else
+//                                {
+//                                    executeResult = EXERESULT.ExcuteFail;
+//                                    replayMsg  = "未搜索到指定文件!";
+//                                    replayMsgByte = (byte[])Transform.Serialize(replayMsg);
+//                                    clientSession.Send(msgKind, executeResult, replayMsgByte);
+//                                }                                                                                                                                                                                                                                                                                                 
+//                                break;
 
-                            //下载文件
-                            case (int)Command.RequestSendFile:
-                                msgBuffer = Transform.byte2String(commandAddtionMsg);
-                                nMsgBuffer = Transform.GetStrings(msgBuffer, '_');
-                                int downLoadNvrId = Convert.ToInt32(nMsgBuffer[0]);
-                                int downLoadChannelId = Convert.ToInt32(nMsgBuffer[1]);
-                                string downLoadFileName = msgBuffer;
-                                string downLoadFilePath = storageDataPath + nvrList[downLoadNvrId].NvrName
-                                                            + "/" + downLoadChannelId + "/";
-                                msgKind = Msgkind.ResponseSendFile;
-                                try
-                                {
-                                    SendFileManager sendFileManager = new SendFileManager(downLoadFilePath, downLoadFileName);
-                                    if (tcpSendFile.CanSend(sendFileManager))
-                                    {
-                                        tcpSendFile.StartSend(clientSession, sendFileManager);
-                                        executeResult = ExecuteResult.ExcuteSuccess;
-                                    }
-                                    else
-                                    {
-                                        executeResult = ExecuteResult.ExcuteFail;
-                                        replayMsg = "无法重复下载或无法找到" + sendFileManager.FileName;
-                                        replayMsgByte = (byte[])Transform.string2Byte(replayMsg);
-                                        clientSession.Send(msgKind, executeResult, replayMsgByte);
-                                    }
-                                }
-                                catch (Exception ex)
-                                {
-                                    executeResult = ExecuteResult.ExcuteFail;
-                                    replayMsg = ex.ToString();
-                                    replayMsgByte = (byte[])Transform.string2Byte(replayMsg);
-                                    clientSession.Send(msgKind, executeResult, replayMsgByte);
-                                }
-                                break;
+//                            //下载文件
+//                            case (int)COMKIND.RequestSendFile:
+//                                msgBuffer = Transform.byte2String(commandAddtionMsg);
+//                                nMsgBuffer = Transform.GetStrings(msgBuffer, '_');
+//                                int downLoadNvrId = Convert.ToInt32(nMsgBuffer[0]);
+//                                int downLoadChannelId = Convert.ToInt32(nMsgBuffer[1]);
+//                                string downLoadFileName = msgBuffer;
+//                                string downLoadFilePath = storageDataPath + nvrList[downLoadNvrId].NvrName
+//                                                            + "/" + downLoadChannelId + "/";
+//                                msgKind = MSGKIND.ResponseSendFile;
+//                                try
+//                                {
+//                                    SendFileManager sendFileManager = new SendFileManager(downLoadFilePath, downLoadFileName);
+//                                    if (tcpSendFile.CanSend(sendFileManager))
+//                                    {
+//                                        tcpSendFile.StartSend(clientSession, sendFileManager);
+//                                        executeResult = EXERESULT.ExcuteSuccess;
+//                                    }
+//                                    else
+//                                    {
+//                                        executeResult = EXERESULT.ExcuteFail;
+//                                        replayMsg = "无法重复下载或无法找到" + sendFileManager.FileName;
+//                                        replayMsgByte = (byte[])Transform.string2Byte(replayMsg);
+//                                        clientSession.Send(msgKind, executeResult, replayMsgByte);
+//                                    }
+//                                }
+//                                catch (Exception ex)
+//                                {
+//                                    executeResult = EXERESULT.ExcuteFail;
+//                                    replayMsg = ex.ToString();
+//                                    replayMsgByte = (byte[])Transform.string2Byte(replayMsg);
+//                                    clientSession.Send(msgKind, executeResult, replayMsgByte);
+//                                }
+//                                break;
 
-                            //发送文件包
-                            case (int)Command.RequestSendFilePack:
-                                ResponeTraFransfersFile responeTraFransfersFile =
-                                    (ResponeTraFransfersFile)Transform.Deserialiaze(commandAddtionMsg);
-                                if(responeTraFransfersFile.Index == 0)
-                                {
-                                    tcpSendFile.Send(clientSession, responeTraFransfersFile.MD5); 
-                                }
-                                break;
+//                            //发送文件包
+//                            case (int)COMKIND.RequestSendFilePack:
+//                                ResponeTraFransfersFile responeTraFransfersFile =
+//                                    (ResponeTraFransfersFile)Transform.Deserialiaze(commandAddtionMsg);
+//                                if(responeTraFransfersFile.Index == 0)
+//                                {
+//                                    tcpSendFile.Send(clientSession, responeTraFransfersFile.MD5); 
+//                                }
+//                                break;
 
-                           //取消发送文件
-                            case (int)Command.RequestCancelSendFile:
-                                 responeTraFransfersFile = (ResponeTraFransfersFile)Transform.Deserialiaze(commandAddtionMsg);
-                                 tcpSendFile.CancelSend(clientSession, responeTraFransfersFile.MD5);
-                                break;
+//                           //取消发送文件
+//                            case (int)COMKIND.RequestCancelSendFile:
+//                                 responeTraFransfersFile = (ResponeTraFransfersFile)Transform.Deserialiaze(commandAddtionMsg);
+//                                 tcpSendFile.CancelSend(clientSession, responeTraFransfersFile.MD5);
+//                                break;
                             
-                            //取消正在发送文件
-                            case (int)Command.RequestCancelReceiveFile:
-                                msgBuffer = Transform.byte2String(commandAddtionMsg);
-                                tcpSendFile.CancelSend(clientSession, msgBuffer);
-                                break;
+//                            //取消正在发送文件
+//                            case (int)COMKIND.RequestCancelReceiveFile:
+//                                msgBuffer = Transform.byte2String(commandAddtionMsg);
+//                                tcpSendFile.CancelSend(clientSession, msgBuffer);
+//                                break;
 
-                            default:
-                                break;
+//                       case (int)COMKIND.RequestFileMoreInformation:
 
-                            ////其他与云台控制相似
-                            //default:
-                            //    msgKind = Msgkind.ack;
-                            //    executeResult = Exeresult.ExcuteFail;
-                            //    replayMsg = "cannot recognize the command";
-                            //    replayMsgByte = System.Text.Encoding.Default.GetBytes(replayMsg);
-                            //    tcpport.Send(msgKind, executeResult, replayMsgByte);
-                            //string ip       =  (tcpport.TcpSocket.RemoteEndPoint as IPEndPoint).Address.ToString();
-                            //string  port  =  (tcpport.TcpSocket.RemoteEndPoint as IPEndPoint).Port.ToString();
-                            //switch(comkind)
-                            //{
-                            //    case 0:
-                            //        AddItemToServerStatusListView(new string[] { "登录", ip, port });
-                            //        break;
-                            //    case 1:
-                            //        AddItemToServerStatusListView(new string[] { "注销", ip, port });
-                            //        break;
-                            //    case 2:
-                            //        AddItemToServerStatusListView(new string[] { "获取通道", ip, port });
-                            //        break;
-                            //    case 3:
-                            //         AddItemToServerStatusListView(new string[] { "云台控制", ip, port });
-                            //        break;                  
-                            //}
+//                                //msgBuffer = Transform.byte2String(commandAddtionMsg);
+//                                //nMsgBuffer = Transform.GetStrings(msgBuffer,',');
+//                                //int morefileNvrId = (int)Transform.string2int(nMsgBuffer[0]);
+//                                //int fileChannelId = (int)Transform.string2int(nMsgBuffer[1]);
+//                                //string fileName = nMsgBuffer[2];
 
-                            //    AddItemToListBox("成功处理客户端操作");
-                            //}
-                        }
-                }
-                catch (Exception ex)
-                {
-//                    controlServer.IsBusy = false;
-//#if ApplicationDebug
-//                    MessageBox.Show("未能成功处理客户端操作");
-//#endif
-//                    msgKind = Msgkind.ack;
-//                    executeResult = Exeresult.ExcuteFail;
-//                    replayMsg = "control fail!";
-//                    replayMsgByte = System.Text.Encoding.Default.GetBytes(replayMsg);
-//                    tcpport.Send(msgKind, executeResult, replayMsgByte);
+//                                break;
 
-//                    AddItemToListBox("未能成功处理客户端操作" + ex.ToString());
-                }
-        }
+
+//                            default:
+//                                break;
+
+//                            ////其他与云台控制相似
+//                            //default:
+//                            //    msgKind = Msgkind.ack;
+//                            //    executeResult = Exeresult.ExcuteFail;
+//                            //    replayMsg = "cannot recognize the command";
+//                            //    replayMsgByte = System.Text.Encoding.Default.GetBytes(replayMsg);
+//                            //    tcpport.Send(msgKind, executeResult, replayMsgByte);
+//                            //string ip       =  (tcpport.TcpSocket.RemoteEndPoint as IPEndPoint).Address.ToString();
+//                            //string  port  =  (tcpport.TcpSocket.RemoteEndPoint as IPEndPoint).Port.ToString();
+//                            //switch(comkind)
+//                            //{
+//                            //    case 0:
+//                            //        AddItemToServerStatusListView(new string[] { "登录", ip, port });
+//                            //        break;
+//                            //    case 1:
+//                            //        AddItemToServerStatusListView(new string[] { "注销", ip, port });
+//                            //        break;
+//                            //    case 2:
+//                            //        AddItemToServerStatusListView(new string[] { "获取通道", ip, port });
+//                            //        break;
+//                            //    case 3:
+//                            //         AddItemToServerStatusListView(new string[] { "云台控制", ip, port });
+//                            //        break;                  
+//                            //}
+
+//                            //    AddItemToListBox("成功处理客户端操作");
+//                            //}
+//                        }
+//                }
+//                catch (Exception ex)
+//                {
+////                    controlServer.IsBusy = false;
+////#if ApplicationDebug
+////                    MessageBox.Show("未能成功处理客户端操作");
+////#endif
+////                    msgKind = Msgkind.ack;
+////                    executeResult = Exeresult.ExcuteFail;
+////                    replayMsg = "control fail!";
+////                    replayMsgByte = System.Text.Encoding.Default.GetBytes(replayMsg);
+////                    tcpport.Send(msgKind, executeResult, replayMsgByte);
+
+////                    AddItemToListBox("未能成功处理客户端操作" + ex.ToString());
+//                }
+//        }
         #endregion
 
         #region 读取配置文件初始化NVR控制器列表

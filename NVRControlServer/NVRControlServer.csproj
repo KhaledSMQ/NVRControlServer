@@ -62,6 +62,27 @@
     <Reference Include="DevComponents.DotNetBar2">
       <HintPath>D:\编程软件\c#\工具包\dotnetbar\DevComponents.DotNetBar2.dll</HintPath>
     </Reference>
+    <Reference Include="EasyDBUtility">
+      <HintPath>bin\Debug\Libs\EasyDBUtility.dll</HintPath>
+    </Reference>
+    <Reference Include="FirebirdSql.Data.FirebirdClient">
+      <HintPath>bin\Debug\Libs\FirebirdSql.Data.FirebirdClient.dll</HintPath>
+    </Reference>
+    <Reference Include="IBM.Data.DB2">
+      <HintPath>bin\Debug\Libs\IBM.Data.DB2.dll</HintPath>
+    </Reference>
+    <Reference Include="MySql.Data">
+      <HintPath>bin\Debug\Libs\MySql.Data.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql">
+      <HintPath>bin\Debug\Libs\Npgsql.dll</HintPath>
+    </Reference>
+    <Reference Include="Oracle.DataAccess">
+      <HintPath>bin\Debug\Libs\Oracle.DataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Sybase.Data.AseClient">
+      <HintPath>bin\Debug\Libs\Sybase.Data.AseClient.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
@@ -75,20 +96,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Config\SystemXmlConfig.cs" />
-    <Compile Include="DataBase\Dao\DataBaseDao.cs" />
-    <Compile Include="DataBase\Dao\DataOperate.cs" />
+    <Compile Include="DataBase\DataOperate.cs" />
     <Compile Include="DataBase\DKServerDataSet.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>DKServerDataSet.xsd</DependentUpon>
     </Compile>
-    <Compile Include="DataBase\Modle\ImageInfo.cs" />
-    <Compile Include="DataBase\Modle\VideoInfo.cs" />
-    <Compile Include="DataBase\Control\ImageDataService.cs" />
-    <Compile Include="DataBase\Control\VideoDataService.cs" />
-    <Compile Include="Net\Control\SendFileManager.cs" />
+    <Compile Include="DataBase\IDAL\IUserInfo.cs" />
+    <Compile Include="DataBase\IDAL\IVideoInfo.cs" />
+    <Compile Include="DataBase\Modle\UserInfoData.cs" />
+    <Compile Include="DataBase\Modle\VideoInfoData.cs" />
+    <Compile Include="DataBase\SqlServerDAL\UserInfoDAL.cs" />
+    <Compile Include="DataBase\SqlServerDAL\VideoInfoDAL.cs" />
+    <Compile Include="Net\Control\PlayBackVideoByNameHandle.cs" />
+    <Compile Include="Net\Control\SendPlayBackVideo.cs" />
+    <Compile Include="Net\Control\UpdateFileTagByNameHandle.cs" />
+    <Compile Include="Net\Control\LoginHandle.cs" />
+    <Compile Include="Net\Control\SearchFileByTimeHandle.cs" />
+    <Compile Include="Net\Model\SendFileManager.cs" />
     <Compile Include="Net\Control\TcpSendFile.cs" />
     <Compile Include="Net\Control\ClientSession.cs" />
+    <Compile Include="Net\Interface\ICommandHandle.cs" />
+    <Compile Include="Net\Interface\IDataFrame.cs" />
     <Compile Include="Net\Model\CommunicateMsg.cs" />
     <Compile Include="Net\Model\Event\FileSendBufferEventArgs.cs" />
     <Compile Include="Net\Model\Event\FileSendEventArgs.cs" />
@@ -101,6 +130,7 @@
     <Compile Include="Net\Model\NetException\NetTcpPortException.cs" />
     <Compile Include="Net\Model\IDataCell.cs" />
     <Compile Include="Net\Model\NetException\NetTcpSendFileException.cs" />
+    <Compile Include="Net\Model\PlayBackVideoSendQueue.cs" />
     <Compile Include="Net\Model\ReceiveDataEventArgs.cs" />
     <Compile Include="Net\Model\ResponseTraFransfersFile.cs" />
     <Compile Include="Net\Model\SendCell.cs" />
@@ -112,6 +142,7 @@
     <Compile Include="Net\Port\UdpPort.cs" />
     <Compile Include="Net\Model\ReadFileObject.cs" />
     <Compile Include="Net\Model\TraFransfersFile.cs" />
+    <Compile Include="Net\Vo\VideoInfoDataVo.cs" />
     <Compile Include="Nvr\Modle\NVRChannel.cs" />
     <Compile Include="Nvr\Control\NVRControler.cs" />
     <Compile Include="Nvr\Modle\NVRChannelRealPlayFalseState.cs" />
@@ -222,9 +253,9 @@
     <EmbeddedResource Include="UI\UdpSendVideoFile.resx">
       <DependentUpon>UdpSendVideoFile.cs</DependentUpon>
     </EmbeddedResource>
-    <None Include="app.config" />
-    <None Include="ClassDiagram1.cd" />
-    <None Include="ClassDiagram2.cd" />
+    <None Include="app.config">
+      <SubType>Designer</SubType>
+    </None>
     <None Include="DataBase\DKServerDataSet.xsc">
       <DependentUpon>DKServerDataSet.xsd</DependentUpon>
     </None>
@@ -267,8 +298,8 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="DataBase\DKServer_log.ldf">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       <DependentUpon>DKServer.mdf</DependentUpon>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="NVR_SMS.ini" />
     <Content Include="obj\x86\Debug\NVRControlServer.csproj.FileListAbsolute.txt" />
@@ -312,6 +343,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Utils\" />
+  </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

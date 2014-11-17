@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using NVRControlServer.Net.Utils;
+using NVRControlServer.Net.Interface;
 
 
 //客户端发送tcp命令消息格式
@@ -17,118 +19,171 @@ using System.Text;
 // |msg_kind(1)  | exec_result(1) |  addtion_msg |
 // |---------------------------------------------------------
 //***********************************************************
+
+
 namespace NVRControlServer.Net.Model
 {
     #region 传输信息枚举类型
-
-    public enum Msgkind : int
+    public enum MSGKIND : int
     {
-        ResponseLogin=0,
+        ResponseLogin = 0,
         ResponseLogout,
         ResponseGetNvrChannelInfo,
-        ResponseSearchFile,
+        ResponseSearchFileByTime,
         ResponseSendFile,
         ResponseSendFilePack,
         ResponseCancelSendFile,
         ResponseCancelReceiveFile,
+        ResponseUpdateFileTag,
+        ResponsePlayBackVideoByName,
+        PlayBackVideoStart,
+        PlayBackVideoFilePack,
+        ResponseStopPlayBackVideo
     };
 
-    public enum ExecuteResult : int
+
+    public enum EXERESULT : int
     {
         ExcuteSuccess = 0,
         ExcuteFail,
-    }; 
+    };
 
-    public enum Command : int
+    public enum COMKIND : int
     {
-        RequestLogin=0,
+        RequestLogin = 0,
         RequestLogout,
         RequestGetNvrChannelInfo,
-        RequestSearchFile,
+        RequestSearchFileByTime,
         RequestSendFile,
         RequestSendFilePack,
         RequestCancelSendFile,
         RequestCancelReceiveFile,
+        RequestUpdateFileTag,
+        RequestPlayBackVideoByName,
+        RequestStopPlayBackVideo
     };
 
-    public enum Identify : int
+    public enum IDENTIFY : int
     {
         LocalClient = 0,
         RemoteClient
     };
     #endregion 传输信息枚举类型
 
-    public class CommunicateMsg
+
+
+    public class ClientCommand : IDataFrame
     {
+        public COMKIND CommanKind { get; set; }
+        public IDENTIFY RightIdentify { get; set; }
+        public byte[] AdditionMsg { get; set; }
 
-        #region 1.变量属性
-        private Msgkind messageKind;
-        private Command commanKind;
-        private Identify rightIdentify;
-        private ExecuteResult execrResult;
-        private byte[] additionMsg;
-
-        public Msgkind MessageKind
+        public ClientCommand()
         {
-            set { this.messageKind = value; }
-            get { return this.messageKind; }
+
+
         }
 
-        public Command CommandKind
+        public ClientCommand(COMKIND comkind, IDENTIFY identify, byte[] data)
         {
-            set{this.commanKind = value;}
-            get{return this.commanKind;}
-        }
-
-        public Identify RightIdentify
-        {
-            set{this.rightIdentify = value;}
-            get{return this.rightIdentify;}
-        }
-
-        public ExecuteResult ExecrResult
-        {
-            set{this.execrResult = value;}
-            get{return this.execrResult;}
-        }
-
-        public byte[] AdditionMsg
-        {
-            set{this.additionMsg = value;}
-            get{return this.additionMsg;}
+            CommanKind = comkind;
+            RightIdentify = identify;
+            AdditionMsg = data;
         }
 
 
-        #endregion 1.变量属性
-
-        #region 2.构造函数
-        public CommunicateMsg()
+        public byte[] ToBuffer()
         {
-            this.messageKind = 0;
-            this.commanKind = 0;
-            this.rightIdentify = 0;
-            this.execrResult = 0;
-            this.additionMsg = null;
+            byte[] buffer;
+            byte[] temp1 = Transform.MinInt2Bytes((int)CommanKind);
+            byte[] temp2 = Transform.MinInt2Bytes((int)RightIdentify);
+
+            if (AdditionMsg != null)
+            {
+                buffer = new byte[AdditionMsg.Length + 4];
+                byte[] temp3 = Transform.Int2Bytes(AdditionMsg.Length + 2);
+                Array.Copy(temp3, 0, buffer, 0, temp3.Length);
+                Array.Copy(temp1, 0, buffer, temp3.Length, temp1.Length);
+                Array.Copy(temp2, 0, buffer, temp3.Length + temp1.Length, temp2.Length);
+                Array.Copy(AdditionMsg, 0, buffer, temp1.Length + temp2.Length + temp3.Length, AdditionMsg.Length);
+            }
+            else
+            {
+                buffer = new byte[4];
+                byte[] temp3 = Transform.Int2Bytes(2);
+                Array.Copy(temp3, 0, buffer, 0, temp3.Length);
+                Array.Copy(temp1, 0, buffer, temp3.Length, temp1.Length);
+                Array.Copy(temp2, 0, buffer, temp3.Length + temp1.Length, temp2.Length);
+            }
+            return buffer;
         }
 
-        /// <summary>
-        /// 服务器发送的信息类型
-        public CommunicateMsg(Msgkind msgkind, ExecuteResult exeresult, byte[] data)
+        public void FromBuffer(byte[] buffer)
         {
-            this.messageKind = msgkind;
-            this.execrResult = exeresult;
-            this.additionMsg = data;
+            CommanKind = (COMKIND)((int)buffer[0]);
+            RightIdentify = (IDENTIFY)((int)buffer[1]);
+            byte[] temp = new byte[buffer.Length - 2];
+            Array.Copy(buffer, 2, temp, 0, buffer.Length - 2);
+            AdditionMsg = temp;
         }
-
-        /// 客户端发送的信息类型
-        public CommunicateMsg(Command comkind, Identify identify, byte[] data)
-        {
-            this.commanKind = comkind;
-            this.rightIdentify = identify;
-            this.additionMsg = data;
-        }
-        #endregion 2.构造函数
-
-
     }
+
+
+
+
+    public class ServerMessage : IDataFrame
+    {
+        public MSGKIND MessageKind { get; set; }
+        public EXERESULT ExecrResult { get; set; }
+        public byte[] AdditionMsg { get; set; }
+
+        public ServerMessage()
+        {
+
+        }
+
+        public ServerMessage(MSGKIND msgKind, EXERESULT exeResult, byte[] additionMsg)
+        {
+            MessageKind = msgKind;
+            ExecrResult = exeResult;
+            AdditionMsg = additionMsg;
+        }
+
+        public byte[] ToBuffer()
+        {
+            byte[] message;
+            byte[] temp1 = Transform.MinInt2Bytes((int)ExecrResult); //单字节
+            byte[] temp2 = Transform.MinInt2Bytes((int)MessageKind); //单字节
+
+            if (AdditionMsg != null)
+            {
+                message = new byte[AdditionMsg.Length + 4];//1+1+2 = 4 
+                byte[] temp3 = Transform.Int2Bytes(AdditionMsg.Length + 2); //双字节 
+                Array.Copy(temp3, 0, message, 0, temp3.Length);
+                Array.Copy(temp2, 0, message, temp3.Length, temp2.Length);
+                Array.Copy(temp1, 0, message, temp3.Length + temp2.Length, temp1.Length);
+                Array.Copy(AdditionMsg, 0, message, temp3.Length + temp2.Length + temp1.Length, AdditionMsg.Length);
+            }
+            else
+            {
+                message = new byte[4];
+                byte[] temp3 = Transform.Int2Bytes(2);
+                Array.Copy(temp3, 0, message, 0, temp3.Length);
+                Array.Copy(temp2, 0, message, temp3.Length, temp2.Length);
+                Array.Copy(temp1, 0, message, temp3.Length + temp2.Length, temp1.Length);
+            }
+            return message;
+        }
+
+        public void FromBuffer(byte[] buffer)
+        {
+            MessageKind = (MSGKIND)((int)buffer[0]);
+            ExecrResult = (EXERESULT)((int)buffer[1]);
+            byte[] temp = new byte[buffer.Length - 2];
+            Array.Copy(buffer, 2, temp, 0, buffer.Length - 2);
+            AdditionMsg = temp;
+        }
+    }
+
+
 }

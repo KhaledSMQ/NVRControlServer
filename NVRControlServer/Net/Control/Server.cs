@@ -97,9 +97,12 @@ namespace NVRControlServer.Net.Model
             catch (SocketException ex)
             {
                 return false;
-                throw ex;
             }
         }
+
+
+
+
 
         public Socket Accept()
         {

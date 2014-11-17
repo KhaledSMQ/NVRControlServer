@@ -18,8 +18,8 @@ using System.Threading;
 using NVRControlServer.NVR.Control;
 using NVRControlServer.Storage.Utils;
 using NVRControlServer.Utils.Log;
-using NVRControlServer.DataBase.Service;
-using NVRControlServer.DataBase.Module;
+
+
 
 namespace NVRControlServer.Storage.Module
 {
@@ -188,8 +188,6 @@ namespace NVRControlServer.Storage.Module
         private Thread taskWorkThread;                                                            //任务工作线程
         private object taskWorkThreadParam;                                                       //任务工作线程参数
         private bool taskWorkThreadRunFlag;                                                       //任务工作线程工作指示
-        private VideoDataService videoDataService;                                                //数据库视频文件信息服务
-        private VideoInfo videoInfo;                                                              //数据库视频文件信息
         #endregion 1.1 变量
 
         #region 1.2 属性
@@ -286,7 +284,6 @@ namespace NVRControlServer.Storage.Module
             }
             taskSchedule = shedule;
 
-            videoDataService = new VideoDataService();
         }
 
         public StorageTask(ISchedule _shedule, string _taskId, string _taskName, string _description, object _param)
@@ -302,7 +299,6 @@ namespace NVRControlServer.Storage.Module
             this.taskWorkThreadParam = _param;
             this.Job += new TimerCallback(this.Execute);
 
-            videoDataService = new VideoDataService();
         }
 
         ~StorageTask()

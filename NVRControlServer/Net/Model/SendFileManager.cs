@@ -110,7 +110,6 @@ namespace NVRControlServer.Net.Control
         }
 
 
-
         public SendFileManager(string filePath , string fileName)
         {
             this.fileName = fileName;

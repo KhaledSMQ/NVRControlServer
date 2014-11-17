@@ -202,13 +202,10 @@ namespace NVRControlServer.NVR.Control
         private int turnNvrStateFlag = 0;
         private int checkNvrErroFlag = 0;
 
-
         private object lockObject;
         private object turnStateObject;
         private object checkNvrErrObject;
         
-
-
         private NVRState nvrState = null;
         private NVRState oldNvrState;
         private NVROffLineState nvrOffLineState; //NVR设备离线状态
@@ -379,8 +376,6 @@ namespace NVRControlServer.NVR.Control
             set { this.nvrOnLineState = value; }
         }
 
-
-
         public Timer CheckNvrErroTimer
         {
             get
@@ -416,10 +411,12 @@ namespace NVRControlServer.NVR.Control
         public NVRControler(string name, string ip, Int16 port, string usr, string pwd, Int16 maxchannelnum)
         {
             NvrChannels = new NVRChannel[maxchannelnum];
+
             for (int i = 0; i != maxchannelnum; i++)
             {
-                NvrChannels[i] = new NVRChannel(i, IPCStatus.Online);
+                NvrChannels[i] = new NVRChannel(i, IPCStatus.Free);
             }
+
             this.NvrName = name;
             this.NvrIP = ip;
             this.NvrPort = port;
@@ -438,8 +435,6 @@ namespace NVRControlServer.NVR.Control
             waiter = new System.Threading.AutoResetEvent(false);
             nvrPingSender.PingCompleted += new PingCompletedEventHandler(PingCompletedCallback);
             options = new PingOptions(64, true);
-
-            //CheckNvrErroTimer.Start();
 
         }
         #endregion 2.2有参构造函数
@@ -861,13 +856,17 @@ namespace NVRControlServer.NVR.Control
         #region 3.6.3 停止下载文件
         public Boolean NvrStopDownLoad()
         {
-            if (nvrDownHandle < 0)
-                return false;
-            if (!CHCNetSDK.NET_DVR_StopGetFile(nvrDownHandle))
+            if (nvrDownHandle >= 0)
             {
-                nvrLastErr = CHCNetSDK.NET_DVR_GetLastError();
-                nvrLastErrString = "NET_DVR_StopGetFile failed, error code= " + nvrLastErr; //下载控制失败，输出错误号
-                return false;
+                if (!CHCNetSDK.NET_DVR_StopGetFile(nvrDownHandle))
+                {
+
+
+
+                    nvrLastErr = CHCNetSDK.NET_DVR_GetLastError();
+                    nvrLastErrString = "停止下载失败";
+                    return false;
+                }
             }
             nvrDownHandle = -1;
             return true;
@@ -879,7 +878,6 @@ namespace NVRControlServer.NVR.Control
         public int NvrGetDownLoadPos()
         {
             int iPos = 0;
-            //获取下载进度
             iPos = CHCNetSDK.NET_DVR_GetDownloadPos(nvrDownHandle);
             return iPos;
         }
@@ -943,6 +941,9 @@ namespace NVRControlServer.NVR.Control
             {
                 nvrLastErr = CHCNetSDK.NET_DVR_GetLastError();
                 nvrLastErrString = "下载控制失败"; //下载控制失败，输出错误号
+                if (NvrStopDownLoad())
+                {
+                }
                 return false;
             }
 

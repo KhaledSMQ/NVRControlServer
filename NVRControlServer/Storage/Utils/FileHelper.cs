@@ -286,6 +286,9 @@ namespace NVRControlServer.Storage.Utils
                 try
                 {
                         FileInfo everyFile = dirFiles[i];
+
+                        //everyFile.
+
                         string everyFileName = everyFile.Name;
                         string everyFileFullName = everyFile.FullName;
                         string everyFileLength = everyFile.Length + "字节";
@@ -334,8 +337,13 @@ namespace NVRControlServer.Storage.Utils
 
         public static long GetFileLength(string filePath)
         {
-            FileInfo fileInfo = new FileInfo(filePath);
-            return fileInfo.Length;
+            if (File.Exists(filePath))
+            {
+                FileInfo fileInfo = new FileInfo(filePath);
+                return fileInfo.Length;
+            }
+            else
+                return 0;
         }
 
 

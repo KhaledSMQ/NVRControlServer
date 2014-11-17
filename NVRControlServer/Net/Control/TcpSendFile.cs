@@ -25,7 +25,6 @@ namespace NVRControlServer.Net.Control
         public event FileSendBufferEventHandler FileSendBuffer;
         public event FileSendEventHandler FileSendComplete;
 
-
         public TcpSendFile()
         {
 
@@ -81,7 +80,6 @@ namespace NVRControlServer.Net.Control
                 sendFileManager.SendFileTimeout += 
                     new EventHandler(SendFileManagerSendFileTimeout);
                 
-
                 TraFransfersFileStart ts = new TraFransfersFileStart(
                     sendFileManager.FileMd5,
                     sendFileManager.FileName,
@@ -90,8 +88,8 @@ namespace NVRControlServer.Net.Control
                     sendFileManager.PartCount,
                     sendFileManager.PartSize);
 
-                clientSession.Send(Msgkind.ResponseSendFile,
-                                               ExecuteResult.ExcuteSuccess,
+                clientSession.Send(MSGKIND.ResponseSendFile,
+                                               EXERESULT.ExcuteSuccess,
                                               Utils.Transform.Serialize(ts));
                 
         }
@@ -110,9 +108,9 @@ namespace NVRControlServer.Net.Control
                     sendFileManager.Dispose();
                     sendFileManager = null;
                 }
-                clientSession.Send(Msgkind.ResponseCancelSendFile,
-                                                ExecuteResult.ExcuteSuccess,
-                                                Utils.Transform.string2Byte(md5));
+                clientSession.Send(MSGKIND.ResponseCancelSendFile,
+                                                EXERESULT.ExcuteSuccess,
+                                                Utils.Transform.String2Byte(md5));
             }
         }
 
@@ -132,9 +130,9 @@ namespace NVRControlServer.Net.Control
                     sendFileManager.Dispose();
                     sendFileManager = null;
                 }
-                clientSession.Send(Msgkind.ResponseCancelReceiveFile,
-                                            ExecuteResult.ExcuteSuccess,
-                                            Transform.string2Byte(string.Format("已取消发送文件{0}", fileMd5)));
+                clientSession.Send(MSGKIND.ResponseCancelReceiveFile,
+                                            EXERESULT.ExcuteSuccess,
+                                            Transform.String2Byte(string.Format("已取消发送文件{0}", fileMd5)));
             }
         }
 
@@ -155,7 +153,7 @@ namespace NVRControlServer.Net.Control
                             byte[] fileData = sendFileManager.Read(i);
                             TraFransfersFile traFransfersFile = new TraFransfersFile(sendFileManager.FileMd5, i, fileData);
                             byte[] filePackBytes = Transform.Serialize(traFransfersFile);
-                            clientSession.Send(Msgkind.ResponseSendFilePack, ExecuteResult.ExcuteSuccess, filePackBytes);
+                            clientSession.Send(MSGKIND.ResponseSendFilePack, EXERESULT.ExcuteSuccess, filePackBytes);
                         }
                         else
                             break;
@@ -190,11 +188,7 @@ namespace NVRControlServer.Net.Control
             }
         }
 
-        /// <summary>
-        /// 发送控制对象超时处理
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
+        // 发送控制对象超时处理
         private void SendFileManagerSendFileTimeout(object sender ,EventArgs e)
         {
             SendFileManager sendFileManager = sender as SendFileManager;

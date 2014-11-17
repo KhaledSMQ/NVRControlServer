@@ -83,19 +83,19 @@ namespace NVRControlServer.Net.Utils
             return size;
         }
 
-        public static byte[] string2Byte(string temp)
+        public static byte[] String2Byte(string temp)
         {
             byte[] buffer = System.Text.Encoding.Default.GetBytes(temp);
             return buffer;
         }
 
-        public static string byte2String(byte[] temp)
+        public static string Byte2String(byte[] temp)
         {
             string buffer = System.Text.Encoding.Default.GetString(temp);
             return buffer;
         }
 
-        public static int string2int(string temp)
+        public static int String2Int(string temp)
         {
             int val = int.Parse(temp);
             return val;
@@ -131,11 +131,7 @@ namespace NVRControlServer.Net.Utils
             return MessageBox.Show(op, "警告!", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
         }
 
-        /// <summary>
-        /// 将一个序列化对象，返回一个byte[]
-        /// </summary>
-        /// <param name="obj"></param>
-        /// <returns></returns>
+        //将一个序列化对象，返回一个byte[]
         public static byte[] Serialize(object obj)
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -146,11 +142,7 @@ namespace NVRControlServer.Net.Utils
             return data;
         }
 
-        /// <summary>
-        /// 将一个序列化的byte[]还原成对象
-        /// </summary>
-        /// <param name="objbytes"></param>
-        /// <returns></returns>
+        //将一个序列化的byte[]还原成对象
         public static object Deserialiaze(byte[] objbytes)
         {
             BinaryFormatter bf = new BinaryFormatter();
@@ -167,89 +159,12 @@ namespace NVRControlServer.Net.Utils
             {
                 if (typeName.EndsWith("DKClient.PlayBackModule.Net.Model.ResponeTraFransfersFile"))
                     return typeof(NVRControlServer.Net.Model.ResponeTraFransfersFile);
-
+                if (typeName.EndsWith("DKClient.PlayBackModule.Net.Vo.VideoInfoDataVo"))
+                    return typeof(NVRControlServer.Net.Vo.VideoInfoDataVo);
                 Assembly ass = Assembly.GetExecutingAssembly();
                 return ass.GetType(typeName);
             }
         } 
-
-        public static CommunicateMsg GetClientCommand(byte[] temp)
-        {
-            CommunicateMsg msg = new CommunicateMsg();
-            msg.CommandKind =(Command)((int)temp[0]);
-            msg.RightIdentify = (Identify)((int)temp[1]);
-            byte[] buff = new byte[temp.Length - 2];
-            Array.Copy(temp, 2, buff, 0, temp.Length - 2);
-            msg.AdditionMsg = buff;
-            return msg;
-        }
-
-        public static CommunicateMsg getServerMsg(byte[] temp)
-        {
-            CommunicateMsg msg = new CommunicateMsg();
-            msg.MessageKind = (Msgkind)((int)temp[0]);
-            msg.ExecrResult = (ExecuteResult)((int)temp[1]);
-            byte[] buff = new byte[temp.Length - 2];
-            Array.Copy(temp, 2, buff, 0, temp.Length - 2);
-            msg.AdditionMsg = buff;
-            return msg;
-        }
-
-       
-        //length + msgkind + exeresult + data
-        public static byte[] addHeadServerMessage(Msgkind msgkind, ExecuteResult exeresult, byte[] data)
-        {
-            byte[] message;
-            byte[] temp1 = MinInt2Bytes((int)exeresult); //单字节
-            byte[] temp2 = MinInt2Bytes((int)msgkind); //单字节
-
-            if (data != null)
-            {
-                message = new byte[data.Length + 4];//1+1+2 = 4 
-                byte[] temp3 = Int2Bytes(data.Length + 2); //双字节 
-                Array.Copy(temp3, 0, message, 0, temp3.Length);
-                Array.Copy(temp2, 0, message, temp3.Length, temp2.Length);
-                Array.Copy(temp1, 0, message, temp3.Length + temp2.Length, temp1.Length);
-                Array.Copy(data, 0, message, temp3.Length + temp2.Length + temp1.Length, data.Length);
-            }
-            else
-            {
-                message = new byte[4];
-                byte[] temp3 = Int2Bytes(2);
-                Array.Copy(temp3, 0, message, 0, temp3.Length);
-                Array.Copy(temp2, 0, message, temp3.Length, temp2.Length);
-                Array.Copy(temp1, 0, message, temp3.Length + temp2.Length, temp1.Length);
-            }
-            return message;
-        }
-
-
-        //length + comkind + identify + data
-        public static byte[] addHeadClientMessage(Command comkind, Identify identify, byte[] data)
-        {
-            byte[] message;
-            byte[] temp1 = MinInt2Bytes((int)comkind);
-            byte[] temp2 = MinInt2Bytes((int)identify);
-
-            if (data != null)
-            {
-                message = new byte[data.Length + 4];
-                byte[] temp3 = Int2Bytes(data.Length + 2);
-                Array.Copy(temp3, 0, message, 0, temp3.Length);
-                Array.Copy(temp1, 0, message, temp3.Length, temp1.Length);
-                Array.Copy(temp2, 0, message, temp3.Length + temp1.Length, temp2.Length);
-                Array.Copy(data, 0, message, temp1.Length + temp2.Length + temp3.Length, data.Length);
-            }
-            else
-            {
-                message = new byte[4];
-                byte[] temp3 = Int2Bytes(2);
-                Array.Copy(temp3, 0, message, 0, temp3.Length);
-                Array.Copy(temp1, 0, message, temp3.Length, temp1.Length);
-                Array.Copy(temp2, 0, message, temp3.Length + temp1.Length, temp2.Length);
-            }
-            return message;
-        }
 
         public static DateTime Bytes2toDateTime(byte[] tem)
         {
